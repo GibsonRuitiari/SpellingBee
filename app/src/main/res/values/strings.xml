@@ -1,0 +1,60 @@
+<resources>
+    <string name="app_name">SpellingBee</string>
+    <string name="puzzle_rank_beginner">Beginner</string>
+    <string name="puzzle_rank_goodstart">Good Start</string>
+    <string name="puzzle_rank_movingup">Moving Up</string>
+    <string name="puzzle_rank_good">Good</string>
+    <string name="puzzle_rank_solid">Solid</string>
+    <string name="puzzle_rank_nice">Nice</string>
+    <string name="puzzle_rank_great">Great</string>
+    <string name="puzzle_rank_amazing">Amazing!</string>
+    <string name="puzzle_rank_genius">Genius</string>
+    <string name="puzzle_rank_queen_bee">Wizard</string>
+
+    <string name="puzzle_detail_toolbar_info">Rules</string>
+
+    <string name="puzzle_rules_dialog_title">How To Play</string>
+    <string name="puzzle_rules_dialog_answers">Puzzle Answers</string>
+    <string name="puzzle_rules_title">Create words from the letters.</string>
+    <string name="puzzle_detail_actionbar_shuffle">Shuffle</string>
+    <string name="puzzle_detail_word_list_empty">Your words…</string>
+    <string name="puzzle_detail_word_list_word_count">You have found %d words</string>
+    <string name="puzzle_detail_error_icon_content_description">Error icon</string>
+    <string name="puzzle_detail_error_description">There was an error getting your puzzle data! Please try again.</string>
+
+    <string name="puzzle_detail_reset_confirm_title">Reset Puzzle?</string>
+    <string name="puzzle_detail_reset_confirm_body">You will lose all current progress. This cannot be undone!</string>
+    <string name="puzzle_detail_reset_confirm_ok">Reset Puzzle</string>
+
+    <string name="puzzle_detail_word_error_too_short">Too short!</string>
+    <string name="puzzle_detail_word_error_too_long">Too long!</string>
+    <string name="puzzle_detail_word_error_missing_center_letter">Missing center letter!</string>
+    <string name="puzzle_detail_word_error_already_found">Already found!</string>
+    <string name="puzzle_detail_word_error_not_in_word_list">Not in word list!</string>
+
+    <string-array name="puzzle_rules">
+        <item>Words must contain at least 4 letters.</item>
+        <item>Words must include the center letter.</item>
+        <item>Our word list does not include words that are obscure, hyphenated, or proper nouns.</item>
+        <item>No cussing either, sorry.</item>
+        <item>Letters can be used more than once.</item>
+    </string-array>
+    <string name="puzzle_scoring_rules_title">Score points to increase your rating.</string>
+    <string-array name="puzzle_scoring_rules">
+        <item>4-letter words are worth 1 point each.</item>
+        <item>Longer words earn 1 point per letter.</item>
+        <item>Each puzzle includes at least one "pangram" which uses every letter. These are worth 7 extra points!</item>
+    </string-array>
+    <string name="puzzle_ranking_dialog_title">Rankings</string>
+    <string name="puzzle_ranking_description">Ranks are based on a percentage of possible points in a puzzle. The minimum scores to reach each rank for this puzzle are:</string>
+    <string name="delete">Delete</string>
+    <string name="puzzle_list_empty_state">No puzzles here yet! Click on the "+" to generate new puzzle.</string>
+    <string name="generate_puzzle">generate puzzle</string>
+    <string name="go_back">Go back</string>
+    <string name="puzzle_detail_toolbar_answers">Answers</string>
+    <string name="cancel">Cancel</string>
+    <string name="close">close</string>
+    <string name="puzzle_detail_actionbar_enter">Enter</string>
+    <string name="puzzle_detail_actionbar_delete">Delete</string>
+    <string name="reset_puzzle">reset puzzle</string>
+</resources>
