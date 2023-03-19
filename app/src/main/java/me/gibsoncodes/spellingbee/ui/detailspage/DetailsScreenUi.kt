@@ -36,6 +36,7 @@ fun DetailsScreenUiContent(modifier: Modifier=Modifier,
     }
 
     BackHandler {
+        onEvent(DetailsScreenEvents.PersistGameState)
         navigateTo(SpellingBeeScreens.MainPage)
     }
 
@@ -46,6 +47,7 @@ fun DetailsScreenUiContent(modifier: Modifier=Modifier,
                 .padding(WindowInsets.systemBars.asPaddingValues()),
             topBar = {
                 DetailsScreenAppBar(modifier = Modifier, onBackButtonClicked= {
+                    onEvent(DetailsScreenEvents.PersistGameState)
                     navigateTo(it) },
                     onInformationIconPressed ={onEvent(DetailsScreenEvents.ShowInfoDialogEvent)},
                     onPuzzleAnswersIconPressed ={onEvent(DetailsScreenEvents.ShowAnswersDialogEvent)},

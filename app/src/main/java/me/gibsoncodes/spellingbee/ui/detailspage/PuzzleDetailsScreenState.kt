@@ -4,7 +4,6 @@ import android.os.Parcelable
 import androidx.compose.runtime.Immutable
 import kotlinx.parcelize.Parcelize
 import me.gibsoncodes.spellingbee.ui.PuzzleBoardState
-import me.gibsoncodes.spellingbee.ui.PuzzleGameState
 import me.gibsoncodes.spellingbee.ui.PuzzleRanking
 import me.gibsoncodes.spellingbee.ui.WordError
 
@@ -19,6 +18,8 @@ sealed interface DetailsScreenEvents{
     value class KeyPressEvent(val pressedChar:Char):DetailsScreenEvents
 
     object DismissActiveToastEvent:DetailsScreenEvents
+
+    object PersistGameState:DetailsScreenEvents
 
     object ShowConfirmResetDialogEvent:DetailsScreenEvents
     object ResetGameEvent:DetailsScreenEvents

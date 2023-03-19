@@ -3,11 +3,8 @@ package me.gibsoncodes.spellingbee.ui.detailspage
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.collect
 import me.gibsoncodes.spellingbee.persistence.PuzzleRepository
-import me.gibsoncodes.spellingbee.puzzlegenerator.Puzzle
 import me.gibsoncodes.spellingbee.ui.PuzzleBoardState
-import me.gibsoncodes.spellingbee.ui.PuzzleGameState
 import me.gibsoncodes.spellingbee.ui.PuzzleGameState.Companion.blankGameState
 import me.gibsoncodes.spellingbee.ui.PuzzleUi
 import me.gibsoncodes.spellingbee.ui.WordResult
@@ -206,6 +203,12 @@ fun detailsScreenViewModel(puzzleId:Long,
                 //do nothing here
                 val currentBoardState = puzzleBoardState ?: return@LaunchedEffect
                 uiState=currentBoardState.toDetailsScreenData(activeWordToast,activeDialog)
+            }
+
+            DetailsScreenEvents.PersistGameState->{
+                puzzleBoardState?.let {
+                    puzzleRepository.updateGameState(it.gameState,it.puzzle.id)
+                }
             }
 
         }
