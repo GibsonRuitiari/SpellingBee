@@ -79,12 +79,13 @@ class PuzzleDaoDelegate constructor(private val database: SQLiteDatabase,
 
     override fun updateGameState(puzzleGameState: PuzzleGameStateEntity) {
         ifDebugDo { Log.d(PuzzleDaoTag,"received game state to update $puzzleGameState  ") }
-        val whereArgs = arrayOf("${puzzleGameState.puzzleId.toInt()}", puzzleGameState.outerLetters.joinToString(","))
+        val whereArgs = arrayOf("${puzzleGameState.puzzleId.toInt()}")
+
         val countDownLatch = CountDownLatch(1)
         val contentValues = puzzleGameState.toContentValues(puzzleGameState.puzzleId)
 
         backgroundThreadHandler.post {
-            val numberOfColumnsUpdated=database.update(PuzzleGameStateTableName,contentValues,"${PuzzleGameStateIdColumnName} = ? AND ${PuzzleGameStateOuterLettersColumnName} = ?",
+            val numberOfColumnsUpdated=database.update(PuzzleGameStateTableName,contentValues,"$PuzzleGameStateIdColumnName = ?",
                 whereArgs)
             ifDebugDo { Log.d(PuzzleDaoTag,"game state update Number of columns updated $numberOfColumnsUpdated") }
             countDownLatch.countDown()

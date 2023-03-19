@@ -34,7 +34,7 @@ fun detailsScreenViewModel(puzzleId:Long,
 
 
     puzzleBoardState?.let {existingBoardState->
-        LaunchedEffect(existingBoardState.gameState){
+        LaunchedEffect(existingBoardState){
             ifDebugDo { println(" ---- saving game state---") }
             puzzleRepository.updateGameState(existingBoardState.gameState,existingBoardState.puzzle.id)
         }
@@ -92,7 +92,7 @@ fun detailsScreenViewModel(puzzleId:Long,
                             puzzleBoardState = newBoardState
 
                             activeWordToast = WordToast.Error(wordResult.errorType)
-
+                            puzzleRepository.updateGameState(puzzleBoardState!!.gameState,puzzleBoardState!!.puzzle.id)
                             uiState=puzzleBoardState!!.toDetailsScreenData(activeWordToast)
                         }
 
