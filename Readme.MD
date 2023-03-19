@@ -42,7 +42,8 @@ ui-composables.
 3. Dependency Injection employed in the project is manual but inspired by Dagger
 
 ## Screenshots
-
+| | | |
+|--|--|--|
 | ![image](https://github.com/GibsonRuitiari/SpellingBee/blob/master/artwork/artwork1.webp) | ![image](https://github.com/GibsonRuitiari/SpellingBee/blob/master/artwork/artwork2.webp) 
 
 
