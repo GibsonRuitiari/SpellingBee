@@ -1,4 +1,9 @@
 # Spelling Bee
+![License-MIT](https://img.shields.io/badge/License-MIT-red.svg)
+
+![](https://github.com/GibsonRuitiari/SpellingBee/blob/master/app/src/main/ic_launcher-playstore.png)
+
+
 A Spelling Bee Game for Android that is similar to that of New York Times' spelling bee game.
 
 ## ⚠️Noteworthy
@@ -18,7 +23,7 @@ is pretty understandable.
 A couple of warnings before you decide to deep-dive into whatever I have written: the techniques used here use bare-metal
 apis such as `Handlers`, `Loopers`,`Count-down Latch` among other stuff, but if you are like me, this wouldn't deter you from looking at the code-base :-)
 
-Lastly, if you want to test the application out before looking at the code, please look at , download the .apk
+Lastly, if you want to test the application out before looking at the code, please look at , [Download](https://github.com/GibsonRuitiari/SpellingBee/blob/master/app/release/app-release.apk) the .apk
 and enjoy playing one of my favorite games.
 
 ## Architecture
@@ -34,9 +39,15 @@ the mantra of this project which is:_Keeping things as simple as possible and us
 you can use `Channels` and `SharedFlow` to broadcast events but both have their cons and pros which need to be taken into consideration when designing your application.
 In this application, a trade-off was made and `SharedFlow` was used as an event-bus to broadcast events from the presenter-like composables to
 ui-composables. 
+3. Dependency Injection employed in the project is manual but inspired by Dagger
 
 ## Screenshots
 
+![](https://github.com/GibsonRuitiari/SpellingBee/blob/master/artwork/artwork1.webp)
+
+![](https://github.com/GibsonRuitiari/SpellingBee/blob/master/artwork/artwork2.webp)
+
+![](https://github.com/GibsonRuitiari/SpellingBee/blob/master/artwork/artwork3.webp)
 
 ## Running the Project
 
