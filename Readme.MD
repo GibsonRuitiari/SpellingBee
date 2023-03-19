@@ -23,7 +23,7 @@ is pretty understandable.
 A couple of warnings before you decide to deep-dive into whatever I have written: the techniques used here use bare-metal
 apis such as `Handlers`, `Loopers`,`Count-down Latch` among other stuff, but if you are like me, this wouldn't deter you from looking at the code-base :-)
 
-Lastly, if you want to test the application out before looking at the code, please look at , [Download](https://github.com/GibsonRuitiari/SpellingBee/blob/master/app/release/app-release.apk) the .apk
+Lastly, if you want to test the application out before looking at the code, please look at , [Download](https://github.com/GibsonRuitiari/SpellingBee/releases/download/v1/app-release.apk) the .apk
 and enjoy playing one of my favorite games.
 
 ## Architecture
