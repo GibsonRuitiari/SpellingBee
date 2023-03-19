@@ -43,11 +43,9 @@ ui-composables.
 
 ## Screenshots
 
-![](https://github.com/GibsonRuitiari/SpellingBee/blob/master/artwork/artwork1.webp)
+<img height="250" src="https://github.com/GibsonRuitiari/SpellingBee/blob/master/artwork/artwork1.webp" width="250"/>
 
-![](https://github.com/GibsonRuitiari/SpellingBee/blob/master/artwork/artwork2.webp)
-
-![](https://github.com/GibsonRuitiari/SpellingBee/blob/master/artwork/artwork3.webp)
+<img height="250" src="https://github.com/GibsonRuitiari/SpellingBee/blob/master/artwork/artwork2.webp" width="250"/>
 
 ## Running the Project
 
