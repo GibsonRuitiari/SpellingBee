@@ -1,9 +1,9 @@
 package me.gibsoncodes.spellingbee.puzzlegenerator
 
+import android.content.res.AssetManager
 import android.os.Handler
+import android.os.Looper
 import android.util.Log
-import androidx.annotation.OpenForTesting
-import me.gibsoncodes.spellingbee.di.AndroidComponent
 import me.gibsoncodes.spellingbee.utils.getScoreOfWord
 import me.gibsoncodes.spellingbee.utils.ifDebugDo
 import me.gibsoncodes.spellingbee.utils.shuffle
@@ -17,9 +17,10 @@ interface PuzzleGenerator {
 }
 
 
-class PuzzleGeneratorDelegate constructor(private val androidComponent: AndroidComponent):PuzzleGenerator{
+class PuzzleGeneratorDelegate(private val looper:Looper,
+                              private val assets:AssetManager):PuzzleGenerator{
 
-    private val ioThreadHandler = Handler(androidComponent.handlerThread.looper)
+    private val ioThreadHandler = Handler(looper)
 
     companion object{
         private const val MinimumWords =4
@@ -33,7 +34,7 @@ class PuzzleGeneratorDelegate constructor(private val androidComponent: AndroidC
         val countDownLatch = CountDownLatch(1)
         val generatedPuzzles = arrayOfNulls<Puzzle>(1)
         ioThreadHandler.post {
-            val wordsToUse = androidComponent.assets.open(WordsTextFile).readWordsFromFile()
+            val wordsToUse = assets.open(WordsTextFile).readWordsFromFile()
             val letterPool =generateLetterPoolFromWords(wordsToUse)
             generatedPuzzles[0] = innerGeneratePuzzle(wordsToUse, letterPool)
             countDownLatch.countDown()
