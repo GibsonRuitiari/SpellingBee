@@ -19,10 +19,9 @@ interface AndroidComponent {
     fun getInMemoryDatabaseInstance():SQLiteDatabase?
 }
 
-class AndroidModule constructor(private val context:Context):AndroidComponent{
+class AndroidModule(private val context:Context):AndroidComponent{
     private val handlerThreadName="HandlerThreadTag"
     private val databaseVersion=1
-    private val databaseName= "Bee.db"
     companion object{
         const val DatabaseName ="SpellingBee.db"
     }
@@ -36,7 +35,7 @@ class AndroidModule constructor(private val context:Context):AndroidComponent{
 
     override fun getDatabaseHelper(inMemory:Boolean): DatabaseHelper {
         return DatabaseHelper(context, version = databaseVersion,
-            databaseName = if (inMemory) null else DatabaseName)
+            databaseName = if (inMemory) "" else DatabaseName)
     }
 
     override fun getDatabaseInstance(inMemory: Boolean):SQLiteDatabase?{

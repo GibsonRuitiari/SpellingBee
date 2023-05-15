@@ -9,6 +9,7 @@ import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
+@SuppressLint("CustomSplashScreen")
 class SpellingBeeSplashActivity :Activity(){
     private val mainScope = MainScope()
     override fun onCreate(savedInstanceState: Bundle?) {

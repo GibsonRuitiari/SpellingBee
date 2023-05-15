@@ -7,10 +7,8 @@ import android.os.Handler
 import android.os.HandlerThread
 import android.provider.BaseColumns
 import android.util.Log
-import androidx.annotation.OpenForTesting
 import androidx.core.database.getIntOrNull
 import androidx.core.database.sqlite.transaction
-import me.gibsoncodes.spellingbee.di.AndroidComponent
 import me.gibsoncodes.spellingbee.persistence.DatabaseHelper.Companion.PuzzleGameStateTableName
 import me.gibsoncodes.spellingbee.persistence.DatabaseHelper.Companion.PuzzleTableName
 import me.gibsoncodes.spellingbee.persistence.PuzzleContract.PuzzleEntry.PuzzleTableGeneratedTimeColumnName
@@ -27,7 +25,7 @@ import me.gibsoncodes.spellingbee.persistence.PuzzleGameStateEntity.Companion.to
 import me.gibsoncodes.spellingbee.utils.ifDebugDo
 import java.util.concurrent.CountDownLatch
 
-interface PuzzleDao {
+interface PuzzleDao:AutoCloseable{
     fun requeryCachedPuzzleBoardStates()
     fun deleteCachedPuzzleById(puzzleId: Long)
     fun getPuzzleById(puzzleId:Long):PuzzleEntity?
@@ -38,15 +36,15 @@ interface PuzzleDao {
     fun getCachedPuzzleBoardStates():List<PuzzleBoardStateEntity>
 }
 
-class PuzzleDaoDelegate constructor(private val database: SQLiteDatabase,
-                                    handlerThread: HandlerThread):PuzzleDao{
+class PuzzleDaoDelegate(val database: SQLiteDatabase,
+                        handlerThread: HandlerThread):PuzzleDao{
     private val backgroundThreadHandler=Handler(handlerThread.looper)
 
 
     private var gameStateCursor:Cursor?=null
-    // for testing
-    val usableCursor:Cursor?
-        get() = gameStateCursor
+    // a binary semaphore that has only two states: one permit available , 0 permit available
+    // used this over re-entrant lock because it allows deadlock recovery
+    private var binarySemaphore = java.util.concurrent.Semaphore(1)
 
     companion object{
         const val PuzzleDaoTag ="PuzzleDaoDelegateLogTag"
@@ -78,7 +76,6 @@ class PuzzleDaoDelegate constructor(private val database: SQLiteDatabase,
     }
 
     override fun updateGameState(puzzleGameState: PuzzleGameStateEntity) {
-        ifDebugDo { Log.d(PuzzleDaoTag,"received game state to update $puzzleGameState  ") }
         val whereArgs = arrayOf("${puzzleGameState.puzzleId.toInt()}")
 
         val countDownLatch = CountDownLatch(1)
@@ -87,7 +84,6 @@ class PuzzleDaoDelegate constructor(private val database: SQLiteDatabase,
         backgroundThreadHandler.post {
             val numberOfColumnsUpdated=database.update(PuzzleGameStateTableName,contentValues,"$PuzzleGameStateIdColumnName = ?",
                 whereArgs)
-            ifDebugDo { Log.d(PuzzleDaoTag,"game state update Number of columns updated $numberOfColumnsUpdated") }
             countDownLatch.countDown()
         }
         try {
@@ -274,9 +270,46 @@ class PuzzleDaoDelegate constructor(private val database: SQLiteDatabase,
         gameStateCursor = newCursor
     }
 
-
     private fun internalGetPuzzleGameStateCursor():Cursor?{
        return database.rawQuery(DatabaseHelper.PuzzleBoardStateEntitySqlStatement,null)
+    }
+
+    override fun close() {
+        gameStateCursor?.let {cursor->
+            try {
+                binarySemaphore.acquire()
+                if (cursor.isClosed.not()){
+                    cursor.close()
+                    gameStateCursor = null
+                }
+            }finally {
+                binarySemaphore.release()
+            }
+        }
+    }
+
+    override fun equals(other: Any?): Boolean {
+        return when{
+            this === other ->true
+            javaClass!=other?.javaClass->false
+            else->{
+                other as PuzzleDaoDelegate
+                //compare the database paths. They should be pointing to the same path otherwise the  instances are different
+                if (other.database.version!=database.version) return false
+                else true
+            }
+        }
+    }
+
+    override fun toString(): String {
+        return "${this.javaClass.canonicalName} -- ${this.hashCode()}"
+    }
+
+    override fun hashCode(): Int {
+        var result = database.hashCode()
+        result = 31 * result + backgroundThreadHandler.hashCode()
+        result = 31 * result + (gameStateCursor?.hashCode() ?: 0)
+        return result
     }
 
 }

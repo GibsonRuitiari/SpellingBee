@@ -1,6 +1,11 @@
 package me.gibsoncodes.spellingbee.utils
 
+import android.database.sqlite.SQLiteDatabase
+import android.database.sqlite.SQLiteOpenHelper
+import android.os.Handler
+import android.os.Looper
 import me.gibsoncodes.spellingbee.BuildConfig
+import java.util.concurrent.CountDownLatch
 
 fun CharArray.getCharacterBitVector():Int{
     var result=0
@@ -46,4 +51,17 @@ fun String.shuffle():String{
         shuffledOutput.append(bucket.removeAt(picker.toInt()))
     }
     return shuffledOutput.toString()
+}
+
+fun SQLiteOpenHelper.getDatabaseInstance(handlerThreadLooper: Looper): SQLiteDatabase?{
+    val countdownLatch = CountDownLatch(1)
+    val databaseInstances = arrayOfNulls<SQLiteDatabase>(1)
+    Handler(handlerThreadLooper).post {
+        databaseInstances[0] = writableDatabase
+        countdownLatch.countDown()
+    }
+    try {
+        countdownLatch.await()
+    }catch (_:Exception){}
+    return databaseInstances[0]
 }

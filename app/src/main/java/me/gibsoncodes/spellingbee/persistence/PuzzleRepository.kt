@@ -11,7 +11,7 @@ import me.gibsoncodes.spellingbee.ui.PuzzleUi.Companion.toPuzzleEntity
 import me.gibsoncodes.spellingbee.ui.toPuzzleGameStateEntity
 import me.gibsoncodes.spellingbee.utils.ifDebugDo
 
-interface PuzzleRepository {
+interface PuzzleRepository:AutoCloseable{
    fun deleteCachedPuzzleById(puzzleId:Long)
    fun insertOrReplacePuzzleGameState(puzzleGameState: PuzzleGameState,puzzleId:Long)
    fun insertOrIgnorePuzzle(puzzleUi: PuzzleUi)
@@ -22,10 +22,14 @@ interface PuzzleRepository {
    fun getCachedPuzzleBoardStates():Set<PuzzleBoardState>
 }
 
-class PuzzleRepositoryDelegate constructor(private val puzzleDao:PuzzleDao):PuzzleRepository{
+class PuzzleRepositoryDelegate (val puzzleDao:PuzzleDao):PuzzleRepository{
     companion object{
         const val PuzzleRepoLog = "PuzzleRepoLogTag"
     }
+    init {
+        println("received-----------------------${puzzleDao.toString()}")
+    }
+
     override fun deleteCachedPuzzleById(puzzleId: Long) {
        puzzleDao.deleteCachedPuzzleById(puzzleId)
     }
@@ -62,6 +66,10 @@ class PuzzleRepositoryDelegate constructor(private val puzzleDao:PuzzleDao):Puzz
            ifDebugDo { Log.d(PuzzleRepoLog,"game state  $gameState  | puzzleUi $puzzleUi") }
            PuzzleBoardState(puzzle = puzzleUi, gameState = gameState)
         }.toSet()
+    }
+
+    override fun close() {
+        //do nothing here for now.
     }
 
 }

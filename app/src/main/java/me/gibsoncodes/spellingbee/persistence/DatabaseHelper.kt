@@ -16,7 +16,7 @@ import me.gibsoncodes.spellingbee.persistence.PuzzleGameStateContract.PuzzleGame
 import me.gibsoncodes.spellingbee.persistence.PuzzleGameStateContract.PuzzleGameStateOuterLettersColumnName
 import me.gibsoncodes.spellingbee.persistence.PuzzleGameStateContract.PuzzleGameStateSolutionColumnName
 
-class DatabaseHelper constructor(context:Context, version:Int,databaseName:String?):SQLiteOpenHelper(context,
+class DatabaseHelper(private val context:Context, private val databaseName:String, private val version:Int):SQLiteOpenHelper(context,
     databaseName,null,version) {
   companion object{
       const val PuzzleTableName="puzzle"
@@ -89,5 +89,26 @@ class DatabaseHelper constructor(context:Context, version:Int,databaseName:Strin
 
     override fun onOpen(db: SQLiteDatabase?) {
         db?.enableWriteAheadLogging()
+    }
+
+    override fun hashCode(): Int {
+        var result = version.hashCode()
+        result = 31.times(result + databaseName.hashCode())
+        return result
+    }
+    override fun equals(other: Any?): Boolean {
+        return when{
+            this === other ->true
+            javaClass!=other?.javaClass->false
+            else ->{
+                other as DatabaseHelper
+                if (other.databaseName!=databaseName) return false
+                else true
+            }
+        }
+    }
+
+    override fun toString(): String {
+        return "${this.javaClass.canonicalName}${this.hashCode()}"
     }
 }
