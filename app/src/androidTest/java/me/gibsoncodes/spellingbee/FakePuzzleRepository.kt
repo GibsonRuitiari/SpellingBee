@@ -64,4 +64,8 @@ class FakePuzzleRepository:PuzzleRepository {
         return puzzleBoardStates.toSet()
     }
 
+    override fun close() {
+
+    }
+
 }
