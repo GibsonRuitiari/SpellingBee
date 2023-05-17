@@ -20,6 +20,7 @@ fun mainScreenViewModel(uiEvents:Flow<MainScreenEvents>,
     var uiEvent by remember { mutableStateOf<MainScreenEvents>(MainScreenEvents.LoadCachedPuzzleBoardStates) }
 
     val puzzleBoardStates = remember { mutableSetOf<PuzzleBoardState>() }
+
     LaunchedEffect(uiEvents,Unit){
         uiEvents.collect{event->
             uiEvent= event
@@ -70,7 +71,6 @@ fun mainScreenViewModel(uiEvents:Flow<MainScreenEvents>,
                     }
                 }
             }
-
     }
 
     return  uiState

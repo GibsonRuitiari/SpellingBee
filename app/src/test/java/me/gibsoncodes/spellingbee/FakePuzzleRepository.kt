@@ -1,6 +1,5 @@
 package me.gibsoncodes.spellingbee
 
-import me.gibsoncodes.spellingbee.persistence.PuzzleBoardStateEntity
 import me.gibsoncodes.spellingbee.persistence.PuzzleEntity
 import me.gibsoncodes.spellingbee.persistence.PuzzleEntity.Companion.toPuzzleUi
 import me.gibsoncodes.spellingbee.persistence.PuzzleRepository
@@ -21,7 +20,7 @@ class FakePuzzleRepository:PuzzleRepository {
     private var puzzleBoardStates:List<PuzzleBoardState> = getPuzzleBoardStatesFromPuzzleEntities()
 
     private fun getDummyGameState(puzzleId:Long,outerLetters:List<Char>):PuzzleGameState
-            = PuzzleGameState.blankGameState(puzzleId, outerLetters)
+            = blankGameState(puzzleId, outerLetters)
 
     private fun getDummyPuzzleEntity(id:Long): PuzzleEntity = PuzzleEntity(id = id, requiredChar = 'W',
         optionalCharacters = setOf('E','F','D','R','O','L'),
@@ -62,6 +61,10 @@ class FakePuzzleRepository:PuzzleRepository {
 
     override fun getCachedPuzzleBoardStates(): Set<PuzzleBoardState> {
         return puzzleBoardStates.toSet()
+    }
+
+    override fun close() {
+
     }
 
 }

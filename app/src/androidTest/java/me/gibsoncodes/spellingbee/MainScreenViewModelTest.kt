@@ -1,18 +1,12 @@
 package me.gibsoncodes.spellingbee
 
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.google.common.truth.Truth.assertThat
 import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.withTimeout
 import me.gibsoncodes.spellingbee.persistence.PuzzleRepository
 import me.gibsoncodes.spellingbee.puzzlegenerator.PuzzleGenerator
 import me.gibsoncodes.spellingbee.ui.mainpage.MainScreenEvents
@@ -49,6 +43,5 @@ class MainScreenViewModelTest {
                 uiEvents.tryEmit(it)
             },onPuzzleClicked = {})
         }
-
     }
 }

@@ -1,16 +1,18 @@
 package me.gibsoncodes.spellingbee
 
+import android.app.Activity
 import android.database.sqlite.SQLiteDatabase
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import com.google.common.truth.Truth.assertThat
-import me.gibsoncodes.spellingbee.di.AndroidComponent
-import me.gibsoncodes.spellingbee.di.AndroidModule
+import me.gibsoncodes.spellingbee.di.*
+import me.gibsoncodes.spellingbee.di.DependenciesContainer.inMemoryOpenHelper
 import me.gibsoncodes.spellingbee.persistence.PuzzleDaoDelegate
 import me.gibsoncodes.spellingbee.persistence.PuzzleEntity
 import me.gibsoncodes.spellingbee.ui.PuzzleGameState
 import me.gibsoncodes.spellingbee.ui.PuzzleGameState.Companion.blankGameState
 import me.gibsoncodes.spellingbee.ui.toPuzzleGameStateEntity
+import me.gibsoncodes.spellingbee.utils.getDatabaseInstance
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
@@ -20,12 +22,15 @@ import org.junit.runner.RunWith
 class SpellingBeeDatabaseTest {
     private var inMemoryDatabase: SQLiteDatabase?=null
     private var puzzleDaoDelegate:PuzzleDaoDelegate?=null
+    private lateinit var factoryManager: FactoryManager
     @Before
     fun setUp(){
         val appContext = InstrumentationRegistry.getInstrumentation().targetContext
-        val androidModule:AndroidComponent = AndroidModule(appContext)
-        inMemoryDatabase = androidModule.getInMemoryDatabaseInstance()
-        puzzleDaoDelegate=PuzzleDaoDelegate(inMemoryDatabase!!,androidModule.handlerThread)
+        factoryManager.onActivityCreate((appContext as? Activity)?.lastNonConfigurationInstance as? InstancesCache)
+        factoryManager = DependenciesContainer.factoryManager
+        val handlerThread=(appContext as SpellingBeeApplication).handlerThread
+        inMemoryDatabase=appContext.inMemoryOpenHelper.getDatabaseInstance(appContext.handlerThread.looper)
+        puzzleDaoDelegate=PuzzleDaoDelegate(inMemoryDatabase!!,handlerThread)
     }
     @Test
     fun testInMemoryDatabaseInstanceIsAcquiredAndDbIsEmpty(){
@@ -83,19 +88,12 @@ class SpellingBeeDatabaseTest {
         val nullGameState=puzzleDaoDelegate?.getGameStateByPuzzleId(firstIdOfInsertedGameState!!)
         assertThat(nullGameState).isNull()
 
-        /*try {
-            val nullPuzzleEntity=puzzleDaoDelegate?.getPuzzleById(idOfFirstPuzzle)
-            assertThat(nullPuzzleEntity).isNull()
-            fail("cursor window is empty hence it's size is 0 thus the request cannot be completed")
-        }catch (ex:CursorIndexOutOfBoundsException){
-            assertThat(ex).hasMessageThat().contains(" Index 0 requested, with a size of 0")
-        }*/
     }
 
-    fun getDummyGameState(puzzleId:Long,outerLetters:List<Char>):PuzzleGameState
+    private fun getDummyGameState(puzzleId:Long, outerLetters:List<Char>):PuzzleGameState
     = blankGameState(puzzleId,outerLetters)
 
-    fun getDummyPuzzleEntity():PuzzleEntity = PuzzleEntity(requiredChar = 'W',
+    private fun getDummyPuzzleEntity():PuzzleEntity = PuzzleEntity(requiredChar = 'W',
         optionalCharacters = setOf('E','F','D','R','O','L'),
         pangrams = setOf("WORD"),
         solutions = setOf("WOOLER","WOOL","LOWER","LEWD","WORD"),

@@ -24,6 +24,14 @@ android {
     buildTypes {
         release {
             minifyEnabled false
+            buildConfigField("String","DatabaseName","\"SpellingBee.db\"")
+            buildConfigField("int","DatabaseVersion","1")
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+        debug {
+            minifyEnabled false
+            buildConfigField("String","DatabaseName","\"DebugSpellingBee.db\"")
+            buildConfigField("int","DatabaseVersion","1")
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
 

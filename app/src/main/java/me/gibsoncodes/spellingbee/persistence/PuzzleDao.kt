@@ -84,6 +84,7 @@ class PuzzleDaoDelegate(val database: SQLiteDatabase,
         backgroundThreadHandler.post {
             val numberOfColumnsUpdated=database.update(PuzzleGameStateTableName,contentValues,"$PuzzleGameStateIdColumnName = ?",
                 whereArgs)
+            ifDebugDo { println("number of columns updated $numberOfColumnsUpdated") }
             countDownLatch.countDown()
         }
         try {
@@ -306,9 +307,8 @@ class PuzzleDaoDelegate(val database: SQLiteDatabase,
     }
 
     override fun hashCode(): Int {
-        var result = database.hashCode()
+        var result = database.version.hashCode()
         result = 31 * result + backgroundThreadHandler.hashCode()
-        result = 31 * result + (gameStateCursor?.hashCode() ?: 0)
         return result
     }
 
