@@ -2,6 +2,7 @@ version: 2.1
 
 orbs:
   android: circleci/android@2.1.2
+  github-cli: circleci/github-cli@2.2.0
 
 jobs:
   unit-test:
@@ -65,6 +66,9 @@ jobs:
           path: app/build/outputs/apk/release/app-release-unsigned.apk
 
 workflows:
+  github-pr-flow:
+    jobs:
+        - github-cli/pr-merge
   test-and-build:
     jobs:
       - unit-test
