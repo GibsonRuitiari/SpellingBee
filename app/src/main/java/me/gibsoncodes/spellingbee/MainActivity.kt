@@ -37,9 +37,11 @@ class MainActivity:androidx.activity.ComponentActivity() {
 
         setContent {
             SpellingBeeTheme {
+
                 Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colors.background) {
                     ParentScreen(puzzleGenerator = puzzleGenerator as PuzzleGeneratorDelegate,
                         puzzleRepository = getPuzzleDao(database!!).puzzleRepository)
+
                 }
             }
         }

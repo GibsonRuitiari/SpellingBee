@@ -9,5 +9,4 @@ object InstancesCache {
     fun remove(index: Int) = dependencies.remove(index)
     operator fun set(index: Int, component:Any?) = dependencies.put(index,component)
 
-
 }
