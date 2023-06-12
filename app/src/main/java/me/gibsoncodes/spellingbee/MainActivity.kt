@@ -10,6 +10,7 @@ import androidx.compose.ui.Modifier
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.core.view.WindowCompat
 import me.gibsoncodes.spellingbee.di.DefaultDependencyContainer
+import me.gibsoncodes.spellingbee.log.warn
 import me.gibsoncodes.spellingbee.persistence.DatabaseHelper
 import me.gibsoncodes.spellingbee.persistence.PuzzleDao
 import me.gibsoncodes.spellingbee.persistence.PuzzleDaoDelegate
@@ -19,11 +20,11 @@ import me.gibsoncodes.spellingbee.puzzlegenerator.PuzzleGenerator
 import me.gibsoncodes.spellingbee.puzzlegenerator.PuzzleGeneratorDelegate
 import me.gibsoncodes.spellingbee.ui.ParentScreen
 import me.gibsoncodes.spellingbee.ui.theme.SpellingBeeTheme
+import me.gibsoncodes.spellingbee.utils.ifDebugDo
 
 class MainActivity:androidx.activity.ComponentActivity() {
     private var isActivityDestroyedBySystem = false
     private lateinit var dependencyContainer: DefaultDependencyContainer
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         installSplashScreen()
@@ -63,9 +64,11 @@ class MainActivity:androidx.activity.ComponentActivity() {
     override fun onDestroy() {
         when(isActivityDestroyedBySystem){
             false->{
+                ifDebugDo { warn<MainActivity> { "Activity is being destroyed but not by the system rather by the user! Disposing our bindings." } }
                 dependencyContainer.dispose()
             }
             else->{
+                ifDebugDo { warn<MainActivity> {"Activity is being destroyed by the system. Dependency bindings will be automatically destroyed."} }
                 // do not remove we will use the cached instance to restore our dependency
             }
         }

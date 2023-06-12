@@ -1,6 +1,8 @@
 package me.gibsoncodes.spellingbee.di
 
+import me.gibsoncodes.spellingbee.log.info
 import me.gibsoncodes.spellingbee.utils.CircularDependencyException
+import me.gibsoncodes.spellingbee.utils.ifDebugDo
 import javax.inject.Singleton
 import kotlin.reflect.KClass
 import kotlin.reflect.full.hasAnnotation
@@ -17,6 +19,7 @@ class DefaultDependencyContainer :DependencyContainer{
     private lateinit var constructorSelector:ConstructorSelector
 
     override fun onStart() {
+        ifDebugDo { info<DefaultDependencyContainer> {"onStart is called, initializing variables needed by the DependencyContainer" } }
         dependencyBindingsParams = mutableMapOf()
         singletonInstances = mutableMapOf()
         dependencyBindings = mutableMapOf()
@@ -45,6 +48,7 @@ class DefaultDependencyContainer :DependencyContainer{
             .qualifiedName} is already registered/present in the container!"}
         dependencyBindings[source] = target
         if (finderParams.isNotEmpty()){
+            ifDebugDo { info<DependencyContainer> { "finder params is not empty" } }
             /*
              Point to note: target type must not be null since, the finder params only apply to the target type
              */
@@ -88,6 +92,7 @@ class DefaultDependencyContainer :DependencyContainer{
 
         return if (constructor.parameters.isEmpty()) {
             //parameterless constructor
+            ifDebugDo { info<DefaultDependencyContainer> {"constructor is parameterless"} }
             constructor.call().also { possiblySaveSingletonInstance(targetType, it) }
         } else {
             try {
@@ -104,6 +109,7 @@ class DefaultDependencyContainer :DependencyContainer{
                 }
                 constructor.call(*constructorParams).also { possiblySaveSingletonInstance(targetType, it) }
             } catch (stackOverFlowError: StackOverflowError) {
+                me.gibsoncodes.spellingbee.log.error<DefaultDependencyContainer> { "circular dependency exception occurred while resolving bindings for ${sourceType.qualifiedName}" }
                 throw CircularDependencyException("Type ${sourceType.qualifiedName}")
             }
         }
@@ -130,9 +136,7 @@ class DefaultDependencyContainer :DependencyContainer{
         dependencyBindingsParams.clear()
         dependencyBindings.clear()
         singletonInstances.clear()
-        println("on disposed called are items cleared? ${dependencyBindingsParams.size} || ${dependencyBindings.size}")
-
-
+        ifDebugDo { info<DefaultDependencyContainer> { "bindings, bindings-params and cached singleton-instances have been disposed" } }
     }
 
     companion object{
