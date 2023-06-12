@@ -10,6 +10,8 @@ import android.provider.BaseColumns
 import android.util.Log
 import androidx.core.database.getIntOrNull
 import androidx.core.database.sqlite.transaction
+import me.gibsoncodes.spellingbee.log.debug
+import me.gibsoncodes.spellingbee.log.info
 import me.gibsoncodes.spellingbee.persistence.DatabaseHelper.Companion.PuzzleGameStateTableName
 import me.gibsoncodes.spellingbee.persistence.DatabaseHelper.Companion.PuzzleTableName
 import me.gibsoncodes.spellingbee.persistence.PuzzleContract.PuzzleEntry.PuzzleTableGeneratedTimeColumnName
@@ -57,9 +59,7 @@ class PuzzleDaoDelegate @Inject constructor(
     // used this over re-entrant lock because it allows deadlock recovery
     private var binarySemaphore = java.util.concurrent.Semaphore(1)
 
-    companion object{
-        const val PuzzleDaoTag ="PuzzleDaoDelegateLogTag"
-    }
+
 
     override fun getPuzzleById(puzzleId: Long): PuzzleEntity? {
         val whereArgs = arrayOf("${puzzleId.toInt()}")
@@ -95,7 +95,8 @@ class PuzzleDaoDelegate @Inject constructor(
         backgroundThreadHandler.post {
             val numberOfColumnsUpdated=database.update(PuzzleGameStateTableName,contentValues,"$PuzzleGameStateIdColumnName = ?",
                 whereArgs)
-            ifDebugDo { println("number of columns updated $numberOfColumnsUpdated") }
+            ifDebugDo {
+                info<PuzzleDaoDelegate> { "number of columns updated $numberOfColumnsUpdated" }}
             countDownLatch.countDown()
         }
         try {
@@ -130,7 +131,9 @@ class PuzzleDaoDelegate @Inject constructor(
             database.transaction {
               val numberOfPuzzleRowsDeleted=  delete(PuzzleTableName,"${BaseColumns._ID} = ?", whereArgs)
               val numberOfPuzzleGameStateRowsDeleted= delete(PuzzleGameStateTableName,"$PuzzleGameStateIdColumnName = ?",whereArgs)
-              ifDebugDo { Log.d(PuzzleDaoTag,"number of game state rows deleted $numberOfPuzzleGameStateRowsDeleted  number of puzzle row deleted $numberOfPuzzleRowsDeleted") }
+              ifDebugDo {
+                  debug<PuzzleDao> { "number of game state rows deleted $numberOfPuzzleGameStateRowsDeleted  number of puzzle row deleted $numberOfPuzzleRowsDeleted" }
+              }
             }
         }
     }
@@ -157,7 +160,7 @@ class PuzzleDaoDelegate @Inject constructor(
         val results = arrayOfNulls<Long>(1)
         backgroundThreadHandler.post {
             val puzzleId=database.internalInsertPuzzleEntity(puzzleEntity,SQLiteDatabase.CONFLICT_IGNORE)
-            ifDebugDo { Log.d(PuzzleDaoTag,"ID of the inserted puzzle $puzzleId") }
+            ifDebugDo { debug<PuzzleDaoDelegate> {"ID of the inserted puzzle $puzzleId"  } }
             results[0] = puzzleId
             countDownLatch.countDown()
         }
@@ -172,7 +175,8 @@ class PuzzleDaoDelegate @Inject constructor(
         val results = arrayOfNulls<Long>(1)
         backgroundThreadHandler.post {
             val _puzzleId=database.internalInsertPuzzleGameState(puzzleGameState,SQLiteDatabase.CONFLICT_REPLACE)
-            ifDebugDo { Log.d(PuzzleDaoTag,"ID of the inserted puzzle game state $_puzzleId") }
+            ifDebugDo { debug<PuzzleDaoDelegate> { "ID of the inserted puzzle game state $_puzzleId" } }
+
             results[0] = _puzzleId
             countDownLatch.countDown()
         }
@@ -204,13 +208,15 @@ class PuzzleDaoDelegate @Inject constructor(
 
     private fun innerGetPuzzleBoardStates():List<PuzzleBoardStateEntity>{
         if (gameStateCursor==null){
-            ifDebugDo { Log.d(PuzzleDaoTag,"initializing game state cursor initially") }
+            ifDebugDo {
+                debug<PuzzleDaoDelegate> { "initializing game state cursor initially" }
+            }
             gameStateCursor = internalGetPuzzleGameStateCursor()
         }
        return gameStateCursor?.use {
             val numberOfRowsInDb = it.count
             if (numberOfRowsInDb <= 0){
-                ifDebugDo { Log.d(PuzzleDaoTag,"no cached puzzle board states in the database") }
+                ifDebugDo { debug<PuzzleDaoDelegate> {  "no cached puzzle board states in the database"} }
                 emptyList()
 
             }else{
@@ -223,7 +229,9 @@ class PuzzleDaoDelegate @Inject constructor(
 
                     }
                 }
-                ifDebugDo { Log.d(PuzzleDaoTag,"${puzzles.size} puzzle board states found in the database") }
+                ifDebugDo {
+                   debug<PuzzleDaoDelegate> { "${puzzles.size} puzzle board states found in the database" }
+                }
                 puzzles
             }
         } ?: emptyList()

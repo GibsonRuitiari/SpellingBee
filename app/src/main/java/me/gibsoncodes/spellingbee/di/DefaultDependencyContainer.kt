@@ -44,6 +44,8 @@ class DefaultDependencyContainer :DependencyContainer{
      * ```
      */
     override fun registerBinding(source:KClass<*>,target:KClass<*>?,vararg finderParams:Any?){
+        ifDebugDo { info<DefaultDependencyContainer> { "registering bindings for ${source.qualifiedName} whose target type is ${target?.qualifiedName}" } }
+
         check(!dependencyBindings.contains(source)){"The source type ${source
             .qualifiedName} is already registered/present in the container!"}
         dependencyBindings[source] = target
@@ -72,7 +74,7 @@ class DefaultDependencyContainer :DependencyContainer{
      */
     override fun resolveBinding(sourceType:KClass<*>):Any{
         val targetType = dependencyBindings[sourceType] ?: sourceType
-
+        ifDebugDo { info<DefaultDependencyContainer> { "resolving binding for $sourceType whose target type is $targetType" } }
         val localFinderParams = dependencyBindingsParams[targetType]
 
         // target type cannot be an interface, if that's the case,

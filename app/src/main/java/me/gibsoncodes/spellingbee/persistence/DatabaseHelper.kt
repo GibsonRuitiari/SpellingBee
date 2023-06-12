@@ -4,6 +4,7 @@ import android.content.Context
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
 import android.provider.BaseColumns
+import me.gibsoncodes.spellingbee.log.info
 import me.gibsoncodes.spellingbee.persistence.PuzzleContract.PuzzleEntry.PuzzleTableCenterLetterOuterLetterIndexColumnName
 import me.gibsoncodes.spellingbee.persistence.PuzzleContract.PuzzleEntry.PuzzleTableGeneratedTimeColumnName
 import me.gibsoncodes.spellingbee.persistence.PuzzleContract.PuzzleEntry.PuzzleTableInnerLetterColumnName
@@ -15,6 +16,7 @@ import me.gibsoncodes.spellingbee.persistence.PuzzleGameStateContract.PuzzleGame
 import me.gibsoncodes.spellingbee.persistence.PuzzleGameStateContract.PuzzleGameStateIdColumnName
 import me.gibsoncodes.spellingbee.persistence.PuzzleGameStateContract.PuzzleGameStateOuterLettersColumnName
 import me.gibsoncodes.spellingbee.persistence.PuzzleGameStateContract.PuzzleGameStateSolutionColumnName
+import me.gibsoncodes.spellingbee.utils.ifDebugDo
 import javax.inject.Singleton
 
 @Singleton
@@ -69,12 +71,13 @@ class DatabaseHelper constructor(context:Context, private val databaseName:Strin
         """.trim()
 
       /* Sql statements used during database upgrades */
-      val puzzleTableDropSqlStatement ="DROP TABLE IF EXISTS $PuzzleTableName;"
-      val puzzleTableGameStateDropSql ="DROP TABLE IF EXISTS $PuzzleGameStateTableName;"
+      const val puzzleTableDropSqlStatement ="DROP TABLE IF EXISTS $PuzzleTableName;"
+      const val puzzleTableGameStateDropSql ="DROP TABLE IF EXISTS $PuzzleGameStateTableName;"
 
 
   }
     override fun onCreate(db: SQLiteDatabase?) {
+        ifDebugDo { info<DatabaseHelper> { "Creating the database. Execution of create tables sql statements in progress." } }
         db?.let {database->
             database.execSQL(puzzleTableSqlStatement)
             database.execSQL(uniquePuzzleIndexStatement)

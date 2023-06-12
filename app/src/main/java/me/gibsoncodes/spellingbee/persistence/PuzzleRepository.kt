@@ -1,6 +1,7 @@
 package me.gibsoncodes.spellingbee.persistence
 
 import android.util.Log
+import me.gibsoncodes.spellingbee.log.debug
 import me.gibsoncodes.spellingbee.persistence.PuzzleEntity.Companion.toPuzzleUi
 import me.gibsoncodes.spellingbee.persistence.PuzzleGameStateEntity.Companion.toPuzzleGameState
 import me.gibsoncodes.spellingbee.ui.PuzzleBoardState
@@ -23,13 +24,11 @@ interface PuzzleRepository:AutoCloseable{
    fun getCachedPuzzleBoardStates():Set<PuzzleBoardState>
 }
 
-class PuzzleRepositoryDelegate @Inject constructor(val puzzleDao:PuzzleDao):PuzzleRepository{
+class PuzzleRepositoryDelegate @Inject constructor(private val puzzleDao:PuzzleDao):PuzzleRepository{
     companion object{
         const val PuzzleRepoLog = "PuzzleRepoLogTag"
     }
-    init {
-        println("received-----------------------${puzzleDao.toString()}")
-    }
+
 
     override fun deleteCachedPuzzleById(puzzleId: Long) {
        puzzleDao.deleteCachedPuzzleById(puzzleId)
@@ -64,7 +63,9 @@ class PuzzleRepositoryDelegate @Inject constructor(val puzzleDao:PuzzleDao):Puzz
        return puzzleDao.getCachedPuzzleBoardStates().map {puzzleBoardStateEntity->
             val puzzleUi = puzzleBoardStateEntity.puzzleEntity.toPuzzleUi()
             val gameState=puzzleBoardStateEntity.gameStateEntity?.toPuzzleGameState() ?: puzzleUi.blankGameState()
-           ifDebugDo { Log.d(PuzzleRepoLog,"game state  $gameState  | puzzleUi $puzzleUi") }
+           ifDebugDo {
+               debug<PuzzleRepositoryDelegate> { "game state  $gameState  | puzzleUi $puzzleUi" }
+           }
            PuzzleBoardState(puzzle = puzzleUi, gameState = gameState)
         }.toSet()
     }
