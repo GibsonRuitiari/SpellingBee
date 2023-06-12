@@ -23,11 +23,11 @@ inline fun<reified T>debug(crossinline action:()->String){
 
 }
 inline fun<reified T>info(crossinline action: () -> String){
-    Log.i(T::class.qualifiedName,"$currentTimeInString| ${action()}")
+    Log.i(T::class.simpleName,"$currentTimeInString| ${action()}")
 }
 inline fun<reified T>error(crossinline action: () -> String){
-    Log.e(T::class.qualifiedName,"$currentTimeInString| ${action()}")
+    Log.e(T::class.simpleName,"$currentTimeInString| ${action()}")
 }
 inline fun<reified T>warn(crossinline action: () -> String){
-    Log.w(T::class.qualifiedName,"$currentTimeInString| ${action()}")
+    Log.w(T::class.simpleName,"$currentTimeInString| ${action()}")
 }

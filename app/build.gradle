@@ -26,12 +26,14 @@ android {
             minifyEnabled false
             buildConfigField("String","DatabaseName","\"SpellingBee.db\"")
             buildConfigField("int","DatabaseVersion","1")
+            buildConfigField("String","WordsTextFile","\"words.txt\"")
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
         debug {
             minifyEnabled false
             buildConfigField("String","DatabaseName","\"DebugSpellingBee.db\"")
             buildConfigField("int","DatabaseVersion","1")
+            buildConfigField("String","WordsTextFile","\"words.txt\"")
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
 

@@ -4,6 +4,8 @@ import android.content.res.AssetManager
 import android.os.Handler
 import android.os.Looper
 import android.util.Log
+import me.gibsoncodes.spellingbee.BuildConfig
+import me.gibsoncodes.spellingbee.log.debug
 import me.gibsoncodes.spellingbee.utils.getScoreOfWord
 import me.gibsoncodes.spellingbee.utils.ifDebugDo
 import me.gibsoncodes.spellingbee.utils.shuffle
@@ -28,7 +30,6 @@ class PuzzleGeneratorDelegate @Inject constructor(looper:Looper,
     companion object{
         private const val MinimumWords =4
         private const val Bingo =7
-        private const val WordsTextFile ="words.txt"
         private const val PuzzleGeneratorTag ="PuzzleGeneratorTag"
     }
 
@@ -37,7 +38,7 @@ class PuzzleGeneratorDelegate @Inject constructor(looper:Looper,
         val countDownLatch = CountDownLatch(1)
         val generatedPuzzles = arrayOfNulls<Puzzle>(1)
         ioThreadHandler.post {
-            val wordsToUse = assets.open(WordsTextFile).readWordsFromFile()
+            val wordsToUse = assets.open(BuildConfig.WordsTextFile).readWordsFromFile()
             val letterPool =generateLetterPoolFromWords(wordsToUse)
             generatedPuzzles[0] = innerGeneratePuzzle(wordsToUse, letterPool)
             countDownLatch.countDown()
@@ -46,7 +47,10 @@ class PuzzleGeneratorDelegate @Inject constructor(looper:Looper,
             countDownLatch.await()
         }catch (_:Exception){}
 
-        ifDebugDo { Log.d(PuzzleGeneratorTag,"generated puzzle ${generatedPuzzles[0]}") }
+
+        ifDebugDo {
+            debug<PuzzleGenerator> { "generated puzzle ${generatedPuzzles[0]}"}
+        }
 
         val puzzleGenerated = generatedPuzzles[0]
 
