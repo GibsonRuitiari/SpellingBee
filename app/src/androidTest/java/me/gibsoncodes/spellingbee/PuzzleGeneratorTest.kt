@@ -1,6 +1,5 @@
 package me.gibsoncodes.spellingbee
 
-import android.app.Activity
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import com.google.common.truth.Truth.assertThat
@@ -15,14 +14,15 @@ import org.junit.runner.RunWith
 @RunWith(AndroidJUnit4::class)
 class PuzzleGeneratorTest {
     private var puzzleGenerator:PuzzleGenerator?=null
-    private lateinit var factoryManager:FactoryManager
+    private lateinit var dependencyContainer:DefaultDependencyContainer
     @Before
     fun setUp(){
         val appContext = InstrumentationRegistry.getInstrumentation().targetContext
-        factoryManager =DependenciesContainer.factoryManager
-        factoryManager.onActivityCreate((appContext as? Activity)?.lastNonConfigurationInstance as? InstancesCache)
-        puzzleGenerator=PuzzleGeneratorDelegate((appContext.applicationContext as SpellingBeeApplication).handlerThread.looper,
+        dependencyContainer = DefaultDependencyContainer.constructNewDependencyContainerInstance()
+        dependencyContainer.registerBinding(PuzzleGenerator::class,PuzzleGeneratorDelegate::class,
+            (appContext.applicationContext as SpellingBeeApplication).handlerThread.looper,
             appContext.assets)
+        puzzleGenerator=dependencyContainer.resolveBinding<PuzzleGenerator>()
     }
 
     @Test
@@ -36,6 +36,6 @@ class PuzzleGeneratorTest {
     @After
     fun tearDown(){
         puzzleGenerator =null
-        factoryManager.onActivityDestroy()
+        dependencyContainer.dispose()
     }
 }

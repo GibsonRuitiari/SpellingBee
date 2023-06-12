@@ -6,6 +6,9 @@ import android.os.Handler
 import android.os.Looper
 import me.gibsoncodes.spellingbee.BuildConfig
 import java.util.concurrent.CountDownLatch
+import kotlin.contracts.ExperimentalContracts
+import kotlin.contracts.InvocationKind
+import kotlin.contracts.contract
 
 fun CharArray.getCharacterBitVector():Int{
     var result=0
@@ -17,26 +20,14 @@ fun CharArray.getCharacterBitVector():Int{
     }
     return result
 }
-fun<T> MutableCollection<T>.addIf(value:T,action: () -> Boolean){
-    if (action()) add(value)
-}
+
 fun String.getScoreOfWord():Int{
     val vectorBit= toCharArray().getCharacterBitVector()
     return if (Integer.bitCount(vectorBit)>= 7) length.plus(7)
     else if (length == 4)  1
     else length
 }
-fun Int.getCharacterFromBitVector():String{
-    //holds the 1-bits whereby 1 represents a character
-    var vectorBit = this
-    val characterBuffer = CharArray(Integer.bitCount(vectorBit))
-    for (i in characterBuffer.indices){
-        val mask=Integer.lowestOneBit(vectorBit)
-        characterBuffer[i] = ('a'.plus(Integer.numberOfTrailingZeros(mask)))
-        vectorBit= vectorBit xor mask
-    }
-    return String(characterBuffer)
-}
+
 
 inline fun ifDebugDo(crossinline action:()->Unit){
     if (BuildConfig.DEBUG){
@@ -52,7 +43,18 @@ fun String.shuffle():String{
     }
     return shuffledOutput.toString()
 }
-
+@OptIn(ExperimentalContracts::class)
+inline fun<T> java.util.concurrent.Semaphore.withLock(action:()->T):T{
+    // invoke the action() block only once, and don't re-invoke once it is
+    // complete
+    contract { callsInPlace(action, InvocationKind.EXACTLY_ONCE) }
+    acquire()
+    try {
+        return action()
+    }finally {
+        release()
+    }
+}
 fun SQLiteOpenHelper.getDatabaseInstance(handlerThreadLooper: Looper): SQLiteDatabase?{
     val countdownLatch = CountDownLatch(1)
     val databaseInstances = arrayOfNulls<SQLiteDatabase>(1)

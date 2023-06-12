@@ -10,6 +10,7 @@ import me.gibsoncodes.spellingbee.ui.PuzzleUi
 import me.gibsoncodes.spellingbee.ui.PuzzleUi.Companion.toPuzzleEntity
 import me.gibsoncodes.spellingbee.ui.toPuzzleGameStateEntity
 import me.gibsoncodes.spellingbee.utils.ifDebugDo
+import javax.inject.Inject
 
 interface PuzzleRepository:AutoCloseable{
    fun deleteCachedPuzzleById(puzzleId:Long)
@@ -22,7 +23,7 @@ interface PuzzleRepository:AutoCloseable{
    fun getCachedPuzzleBoardStates():Set<PuzzleBoardState>
 }
 
-class PuzzleRepositoryDelegate (val puzzleDao:PuzzleDao):PuzzleRepository{
+class PuzzleRepositoryDelegate @Inject constructor(val puzzleDao:PuzzleDao):PuzzleRepository{
     companion object{
         const val PuzzleRepoLog = "PuzzleRepoLogTag"
     }

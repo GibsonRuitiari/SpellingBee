@@ -3,6 +3,7 @@ package me.gibsoncodes.spellingbee.persistence
 import android.content.ContentValues
 import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
+import android.database.sqlite.SQLiteOpenHelper
 import android.os.Handler
 import android.os.HandlerThread
 import android.provider.BaseColumns
@@ -22,8 +23,12 @@ import me.gibsoncodes.spellingbee.persistence.PuzzleGameStateContract.PuzzleGame
 import me.gibsoncodes.spellingbee.persistence.PuzzleGameStateContract.PuzzleGameStateOuterLettersColumnName
 import me.gibsoncodes.spellingbee.persistence.PuzzleGameStateContract.PuzzleGameStateSolutionColumnName
 import me.gibsoncodes.spellingbee.persistence.PuzzleGameStateEntity.Companion.toContentValues
+import me.gibsoncodes.spellingbee.utils.getDatabaseInstance
 import me.gibsoncodes.spellingbee.utils.ifDebugDo
+import me.gibsoncodes.spellingbee.utils.withLock
 import java.util.concurrent.CountDownLatch
+import javax.inject.Inject
+import javax.inject.Singleton
 
 interface PuzzleDao:AutoCloseable{
     fun requeryCachedPuzzleBoardStates()
@@ -36,8 +41,14 @@ interface PuzzleDao:AutoCloseable{
     fun getCachedPuzzleBoardStates():List<PuzzleBoardStateEntity>
 }
 
-class PuzzleDaoDelegate(val database: SQLiteDatabase,
-                        handlerThread: HandlerThread):PuzzleDao{
+@Singleton
+class PuzzleDaoDelegate @Inject constructor(
+    sqLiteOpenHelper: SQLiteOpenHelper,
+    handlerThread: HandlerThread):PuzzleDao{
+    private val database: SQLiteDatabase
+    init {
+        database= sqLiteOpenHelper.getDatabaseInstance(handlerThread.looper)!!
+    }
     private val backgroundThreadHandler=Handler(handlerThread.looper)
 
 
@@ -277,14 +288,11 @@ class PuzzleDaoDelegate(val database: SQLiteDatabase,
 
     override fun close() {
         gameStateCursor?.let {cursor->
-            try {
-                binarySemaphore.acquire()
-                if (cursor.isClosed.not()){
+            binarySemaphore.withLock {
+                if (!cursor.isClosed){
                     cursor.close()
-                    gameStateCursor = null
+                    gameStateCursor=null
                 }
-            }finally {
-                binarySemaphore.release()
             }
         }
     }

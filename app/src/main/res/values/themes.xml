@@ -1,14 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources xmlns:tools="http://schemas.android.com/tools">
+<resources>
     <style name="Theme.SpellingBee" parent="android:Theme.Material.Light.NoActionBar">
         <item name="android:statusBarColor">@android:color/transparent</item>
         <item name="android:windowLightStatusBar">true</item>
     </style>
-    <style name="Theme.SpellingBee.Splash" parent="android:Theme.Material.Light.NoActionBar">
-        <item name="android:statusBarColor">@android:color/transparent</item>
-        <item name="android:windowLightStatusBar" tools:targetApi="m">false</item>
-        <item name="android:windowLightNavigationBar" tools:targetApi="o_mr1">false</item>
-        <item name="android:navigationBarColor">@android:color/transparent</item>
-        <item name="android:windowBackground">@drawable/splash_background</item>
+    <style name="Theme.SpellingBee.Splash" parent="Theme.SplashScreen">
+        <item name="windowSplashScreenBackground">@color/white</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/splash_background</item>
+        <item name="postSplashScreenTheme">@style/Theme.SpellingBee</item>
     </style>
 </resources>

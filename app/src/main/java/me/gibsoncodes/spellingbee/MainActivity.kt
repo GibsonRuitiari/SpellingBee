@@ -7,46 +7,49 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.ui.Modifier
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.core.view.WindowCompat
-import me.gibsoncodes.spellingbee.di.DependenciesContainer
-import me.gibsoncodes.spellingbee.di.DependenciesContainer.defaultOpenHelper
-import me.gibsoncodes.spellingbee.di.DependenciesContainer.getPuzzleDao
-import me.gibsoncodes.spellingbee.di.DependenciesContainer.puzzleGenerator
-import me.gibsoncodes.spellingbee.di.DependenciesContainer.puzzleRepository
-import me.gibsoncodes.spellingbee.di.InstancesCache
+import me.gibsoncodes.spellingbee.di.DefaultDependencyContainer
+import me.gibsoncodes.spellingbee.persistence.DatabaseHelper
+import me.gibsoncodes.spellingbee.persistence.PuzzleDao
+import me.gibsoncodes.spellingbee.persistence.PuzzleDaoDelegate
+import me.gibsoncodes.spellingbee.persistence.PuzzleRepository
+import me.gibsoncodes.spellingbee.persistence.PuzzleRepositoryDelegate
+import me.gibsoncodes.spellingbee.puzzlegenerator.PuzzleGenerator
 import me.gibsoncodes.spellingbee.puzzlegenerator.PuzzleGeneratorDelegate
 import me.gibsoncodes.spellingbee.ui.ParentScreen
 import me.gibsoncodes.spellingbee.ui.theme.SpellingBeeTheme
-import me.gibsoncodes.spellingbee.utils.getDatabaseInstance
 
-@Suppress("DEPRECATION")
 class MainActivity:androidx.activity.ComponentActivity() {
     private var isActivityDestroyedBySystem = false
-    private val factoryManager by lazy { DependenciesContainer.factoryManager }
-    private lateinit var sqliteOpenHelper:SQLiteOpenHelper
+    private lateinit var dependencyContainer: DefaultDependencyContainer
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        installSplashScreen()
         WindowCompat.setDecorFitsSystemWindows(window, false)
         super.onCreate(savedInstanceState)
+        val spellingBeeApplication = application as SpellingBeeApplication
 
-        val applicationHandlerThread =(application as SpellingBeeApplication).handlerThread
+        dependencyContainer = spellingBeeApplication.defaultDependencyContainer as DefaultDependencyContainer
 
-        factoryManager.onActivityCreate(lastCustomNonConfigurationInstance as? InstancesCache)
-        sqliteOpenHelper=applicationContext.defaultOpenHelper
-        val database=sqliteOpenHelper.getDatabaseInstance(applicationHandlerThread.looper)
+        dependencyContainer.registerBinding(SQLiteOpenHelper::class,DatabaseHelper::class,applicationContext,BuildConfig.DatabaseName,BuildConfig.DatabaseVersion)
+        dependencyContainer.registerBinding(PuzzleDao::class,PuzzleDaoDelegate::class, spellingBeeApplication.handlerThread)
+        dependencyContainer.registerBinding(PuzzleRepository::class, PuzzleRepositoryDelegate::class)
+        dependencyContainer.registerBinding(PuzzleGenerator::class, PuzzleGeneratorDelegate::class, spellingBeeApplication.handlerThread.looper, assets)
+
+        val puzzleGenerator = dependencyContainer.resolveBinding<PuzzleGenerator>()
+        val puzzleRepository= dependencyContainer.resolveBinding<PuzzleRepository>()
 
         setContent {
             SpellingBeeTheme {
-
                 Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colors.background) {
-                    ParentScreen(puzzleGenerator = puzzleGenerator as PuzzleGeneratorDelegate,
-                        puzzleRepository = getPuzzleDao(database!!).puzzleRepository)
-
+              ParentScreen(puzzleGenerator = puzzleGenerator,
+                  puzzleRepository = puzzleRepository)
                 }
             }
         }
     }
-
     override fun onResume() {
         isActivityDestroyedBySystem=false
         super.onResume()
@@ -59,19 +62,14 @@ class MainActivity:androidx.activity.ComponentActivity() {
 
     override fun onDestroy() {
         when(isActivityDestroyedBySystem){
-            false-> {
-                factoryManager.onActivityDestroy()
-                sqliteOpenHelper.close()
+            false->{
+                dependencyContainer.dispose()
             }
-            else-> {
+            else->{
                 // do not remove we will use the cached instance to restore our dependency
             }
         }
         super.onDestroy()
-    }
-
-    override fun onRetainCustomNonConfigurationInstance(): InstancesCache {
-         return factoryManager.instanceCache
     }
 
 }

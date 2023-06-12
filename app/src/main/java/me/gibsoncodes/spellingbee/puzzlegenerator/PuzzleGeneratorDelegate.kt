@@ -11,14 +11,17 @@ import java.io.InputStream
 import java.text.DateFormat
 import java.util.*
 import java.util.concurrent.CountDownLatch
+import javax.inject.Inject
+import javax.inject.Singleton
 
 interface PuzzleGenerator {
     fun generatePuzzle(count:Int):Puzzle?
 }
 
 
-class PuzzleGeneratorDelegate(private val looper:Looper,
-                              private val assets:AssetManager):PuzzleGenerator{
+@Singleton
+class PuzzleGeneratorDelegate @Inject constructor(looper:Looper,
+    private val assets:AssetManager):PuzzleGenerator{
 
     private val ioThreadHandler = Handler(looper)
 

@@ -1,12 +1,13 @@
 package me.gibsoncodes.spellingbee
 
-import android.app.Activity
 import android.database.sqlite.SQLiteDatabase
+import android.database.sqlite.SQLiteOpenHelper
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import com.google.common.truth.Truth.assertThat
 import me.gibsoncodes.spellingbee.di.*
-import me.gibsoncodes.spellingbee.di.DependenciesContainer.inMemoryOpenHelper
+import me.gibsoncodes.spellingbee.persistence.DatabaseHelper
+import me.gibsoncodes.spellingbee.persistence.PuzzleDao
 import me.gibsoncodes.spellingbee.persistence.PuzzleDaoDelegate
 import me.gibsoncodes.spellingbee.persistence.PuzzleEntity
 import me.gibsoncodes.spellingbee.ui.PuzzleGameState
@@ -22,15 +23,24 @@ import org.junit.runner.RunWith
 class SpellingBeeDatabaseTest {
     private var inMemoryDatabase: SQLiteDatabase?=null
     private var puzzleDaoDelegate:PuzzleDaoDelegate?=null
-    private lateinit var factoryManager: FactoryManager
+    private lateinit var dependencyContainer:DependencyContainer
+    private val testDatabaseName="testDatabase.db"
+    private val testDatabaseVersion=1
     @Before
     fun setUp(){
         val appContext = InstrumentationRegistry.getInstrumentation().targetContext
-        factoryManager.onActivityCreate((appContext as? Activity)?.lastNonConfigurationInstance as? InstancesCache)
-        factoryManager = DependenciesContainer.factoryManager
+        dependencyContainer = DefaultDependencyContainer.constructNewDependencyContainerInstance()
+
+        dependencyContainer.registerBinding(
+            SQLiteOpenHelper::class,
+            DatabaseHelper::class,appContext,testDatabaseName,testDatabaseVersion)
+        val sqliteOpenHelper=dependencyContainer.resolveBinding(DatabaseHelper::class) as SQLiteOpenHelper
         val handlerThread=(appContext as SpellingBeeApplication).handlerThread
-        inMemoryDatabase=appContext.inMemoryOpenHelper.getDatabaseInstance(appContext.handlerThread.looper)
-        puzzleDaoDelegate=PuzzleDaoDelegate(inMemoryDatabase!!,handlerThread)
+
+        dependencyContainer.registerBinding(PuzzleDao::class,PuzzleDaoDelegate::class,handlerThread)
+        puzzleDaoDelegate=dependencyContainer.resolveBinding(PuzzleDao::class) as PuzzleDaoDelegate
+
+        inMemoryDatabase=sqliteOpenHelper.getDatabaseInstance(appContext.handlerThread.looper)
     }
     @Test
     fun testInMemoryDatabaseInstanceIsAcquiredAndDbIsEmpty(){
@@ -70,9 +80,6 @@ class SpellingBeeDatabaseTest {
     fun testDeleteCachedPuzzleBoardState(){
         val puzzleEntity = getDummyPuzzleEntity()
         val idOfFirstPuzzle=puzzleDaoDelegate?.insertOrIgnorePuzzleEntity(puzzleEntity)
-        //val secondPuzzleEntity= puzzleEntity.copy(requiredChar = 'A', optionalCharacters = setOf('V','N','T','O','R'))
-
-        //val idOfSecondPuzzle = puzzleDaoDelegate?.insertOrIgnorePuzzleEntity(secondPuzzleEntity)
 
         val firstBlankGameState= getDummyGameState(idOfFirstPuzzle!!,puzzleEntity.optionalCharacters.toList())
 
@@ -104,5 +111,6 @@ class SpellingBeeDatabaseTest {
     @After
     fun tearDown(){
         inMemoryDatabase?.releaseReference()
+        dependencyContainer.dispose()
     }
 }

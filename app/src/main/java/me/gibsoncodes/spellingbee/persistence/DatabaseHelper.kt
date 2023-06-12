@@ -15,8 +15,11 @@ import me.gibsoncodes.spellingbee.persistence.PuzzleGameStateContract.PuzzleGame
 import me.gibsoncodes.spellingbee.persistence.PuzzleGameStateContract.PuzzleGameStateIdColumnName
 import me.gibsoncodes.spellingbee.persistence.PuzzleGameStateContract.PuzzleGameStateOuterLettersColumnName
 import me.gibsoncodes.spellingbee.persistence.PuzzleGameStateContract.PuzzleGameStateSolutionColumnName
+import javax.inject.Singleton
 
-class DatabaseHelper(private val context:Context, private val databaseName:String, private val version:Int):SQLiteOpenHelper(context,
+@Singleton
+class DatabaseHelper constructor(context:Context, private val databaseName:String,
+                                 private val version:Int):SQLiteOpenHelper(context,
     databaseName,null,version) {
   companion object{
       const val PuzzleTableName="puzzle"

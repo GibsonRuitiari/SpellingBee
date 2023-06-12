@@ -79,6 +79,8 @@ dependencies {
 
     implementation "org.jetbrains.kotlin:kotlin-reflect:1.8.10"
     implementation("javax.inject:javax.inject:1")
+    implementation "androidx.core:core-splashscreen:1.0.0"
+
 
     debugImplementation "androidx.compose.ui:ui-tooling"
     debugImplementation "androidx.compose.ui:ui-test-manifest"
