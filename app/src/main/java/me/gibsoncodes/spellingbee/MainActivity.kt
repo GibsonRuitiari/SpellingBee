@@ -34,7 +34,9 @@ class MainActivity:androidx.activity.ComponentActivity() {
 
         dependencyContainer = spellingBeeApplication.defaultDependencyContainer as DefaultDependencyContainer
 
-        dependencyContainer.registerBinding(SQLiteOpenHelper::class,DatabaseHelper::class,applicationContext,BuildConfig.DatabaseName,BuildConfig.DatabaseVersion)
+        dependencyContainer.registerBinding(SQLiteOpenHelper::class,
+            DatabaseHelper::class,applicationContext,
+            BuildConfig.DatabaseName,BuildConfig.DatabaseVersion)
         dependencyContainer.registerBinding(PuzzleDao::class,PuzzleDaoDelegate::class, spellingBeeApplication.handlerThread)
         dependencyContainer.registerBinding(PuzzleRepository::class, PuzzleRepositoryDelegate::class)
         dependencyContainer.registerBinding(PuzzleGenerator::class, PuzzleGeneratorDelegate::class, spellingBeeApplication.handlerThread.looper, assets)

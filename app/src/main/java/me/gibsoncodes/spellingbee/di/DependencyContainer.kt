@@ -9,3 +9,13 @@ interface DependencyContainer:Disposable{
     fun resolveBinding(sourceType:KClass<*>):Any
     fun onStart()
 }
+
+fun DependencyContainer.installBindings(vararg acceptBindings:Pair<KClass<*>,KClass<*>?>){
+    acceptBindings.forEach {
+        val source= it.first
+        val target= it.second
+        registerBinding(source,target)
+    }
+}
+fun startContainer():DependencyContainer=
+    DefaultDependencyContainer.getInstance()

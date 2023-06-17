@@ -53,9 +53,14 @@ class DefaultDependencyContainer :DependencyContainer{
             ifDebugDo { info<DependencyContainer> { "finder params is not empty" } }
             /*
              Point to note: target type must not be null since, the finder params only apply to the target type
+             or a concrete source type
              */
-            checkNotNull(target)
-            dependencyBindingsParams[target]= finderParams.toList()
+            if ( target==null &&(source.java.isInterface || source.isAbstract || source.isOpen) ){
+                throw IllegalStateException("target cannot be null or the source must be a concrete type!")
+            }else if (target!=null){
+                dependencyBindingsParams[target]= finderParams.toList()
+            }else dependencyBindingsParams[source]= finderParams.toList()
+
         }
     }
 

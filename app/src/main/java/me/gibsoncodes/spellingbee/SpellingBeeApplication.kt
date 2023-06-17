@@ -4,6 +4,8 @@ import android.app.Application
 import android.os.HandlerThread
 import me.gibsoncodes.spellingbee.di.DefaultDependencyContainer
 import me.gibsoncodes.spellingbee.di.DependencyContainer
+import me.gibsoncodes.spellingbee.di.installBindings
+import me.gibsoncodes.spellingbee.di.startContainer
 
 class SpellingBeeApplication :Application(){
     private val handlerThreadTag ="SpellingBeeHandlerThread"
@@ -15,7 +17,8 @@ class SpellingBeeApplication :Application(){
     override fun onCreate() {
         super.onCreate()
         handlerThread= HandlerThread(handlerThreadTag).apply { start() }
-        defaultDependencyContainer = DefaultDependencyContainer.getInstance()
+        defaultDependencyContainer = startContainer()
 
+        defaultDependencyContainer.installBindings()
     }
 }
