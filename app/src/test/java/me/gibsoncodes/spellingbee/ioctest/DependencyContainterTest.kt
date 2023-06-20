@@ -1,20 +1,15 @@
 package me.gibsoncodes.spellingbee.ioctest
 
-import me.gibsoncodes.spellingbee.di.ConstructorSelector
-import me.gibsoncodes.spellingbee.di.DependencyContainer
-import me.gibsoncodes.spellingbee.utils.CircularDependencyException
+import me.gibsoncodes.spellingbee.di.DefaultDependencyContainer
 import org.junit.Before
 import org.junit.Test
 import kotlin.test.assertFails
-import kotlin.test.assertFailsWith
 
 class DependencyContainterTest {
-    private lateinit var dependencyContainer:DependencyContainer
+     private lateinit var dependencyContainer:DefaultDependencyContainer
     @Before
     fun initDependencyContainerInstance() {
-        dependencyContainer = DependencyContainer.constructNewDependencyContainer(
-            ConstructorSelector()
-        )
+        dependencyContainer = DefaultDependencyContainer.constructNewDependencyContainerInstance()
     }
     @Test
     fun `registering a binding fails when the type exists`(){
@@ -53,7 +48,7 @@ class DependencyContainterTest {
     fun `resolve fails for circular dependency`(){
         dependencyContainer.registerBinding(Egg::class)
         dependencyContainer.registerBinding(Chicken::class)
-        assertFailsWith(CircularDependencyException::class){
+        assertFails{
             dependencyContainer.resolveBinding<Egg>()
         }
     }

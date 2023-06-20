@@ -33,8 +33,8 @@ fun mainScreenViewModel(uiEvents:Flow<MainScreenEvents>,
                 is MainScreenEvents.LoadCachedPuzzleBoardStates->{
                     uiState = MainScreenState.MainScreenLoading
                     puzzleBoardStates.clear()
-                    val _puzzleBoardStates=puzzleRepository.getCachedPuzzleBoardStates()
-                    puzzleBoardStates.addAll(_puzzleBoardStates)
+                    val localPuzzleBoardStates=puzzleRepository.getCachedPuzzleBoardStates()
+                    puzzleBoardStates.addAll(localPuzzleBoardStates)
                     delay(1000)
                     uiState = MainScreenState.MainScreenData(puzzleBoardStates = puzzleBoardStates)
                 }

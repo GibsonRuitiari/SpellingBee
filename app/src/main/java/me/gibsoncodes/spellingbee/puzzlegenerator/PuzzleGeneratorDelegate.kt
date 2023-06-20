@@ -3,7 +3,6 @@ package me.gibsoncodes.spellingbee.puzzlegenerator
 import android.content.res.AssetManager
 import android.os.Handler
 import android.os.Looper
-import android.util.Log
 import me.gibsoncodes.spellingbee.BuildConfig
 import me.gibsoncodes.spellingbee.log.debug
 import me.gibsoncodes.spellingbee.utils.getScoreOfWord
@@ -11,7 +10,7 @@ import me.gibsoncodes.spellingbee.utils.ifDebugDo
 import me.gibsoncodes.spellingbee.utils.shuffle
 import java.io.InputStream
 import java.text.DateFormat
-import java.util.*
+import java.util.Date
 import java.util.concurrent.CountDownLatch
 import javax.inject.Inject
 import javax.inject.Singleton

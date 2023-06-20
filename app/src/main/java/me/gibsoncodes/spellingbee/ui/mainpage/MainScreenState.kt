@@ -3,7 +3,6 @@ package me.gibsoncodes.spellingbee.ui.mainpage
 import android.os.Parcelable
 import kotlinx.parcelize.Parcelize
 import me.gibsoncodes.spellingbee.ui.PuzzleBoardState
-import me.gibsoncodes.spellingbee.ui.PuzzleGameState
 import me.gibsoncodes.spellingbee.ui.PuzzleUi
 
 @Parcelize

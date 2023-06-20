@@ -1,10 +1,16 @@
 package me.gibsoncodes.spellingbee.ui
 
 import android.app.Activity
-import android.content.res.Configuration
 import androidx.activity.compose.BackHandler
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
@@ -77,11 +83,9 @@ fun ParentScreen(puzzleGenerator: PuzzleGenerator,
         SpellingBeeScreens.MainPage->{
             val mainScreenState = mainScreenViewModel(events, puzzleGenerator = puzzleGenerator,puzzleRepository)
             val configuration = LocalConfiguration.current
-            var initialConfiguration by remember{ mutableStateOf(Configuration.ORIENTATION_PORTRAIT) }
 
             LaunchedEffect(configuration){
                 events.tryEmit(MainScreenEvents.RefreshPuzzleBoardStates)
-                initialConfiguration = configuration.orientation
             }
 
             MainScreenView(mainScreenState, onEvent =events::tryEmit,
